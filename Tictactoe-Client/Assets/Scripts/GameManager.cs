@@ -30,10 +30,10 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        CheckSignIn();
+        GetInfo();
     }
 
-    void CheckSignIn()
+    void GetInfo()
     {
         string sid = PlayerPrefs.GetString("sid");
         if(sid.Equals(""))
@@ -43,7 +43,13 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            HTTPNetworkManager.Instance.Info( (response) =>
+            {
+                Debug.Log(response);
+            }, () =>
+            {
 
+            });
         }
     }
 

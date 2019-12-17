@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HTTPRequest : MonoBehaviour
+public class HTTPRequest
 {
-
+    public string GetJSON()
+    {
+        string json = JsonUtility.ToJson(this);
+        return json;
+    }
 }
 
-public class HTTPRequestsSingUp
+public class HTTPRequestsSignUp : HTTPRequest
 {
     public string username, password, name;
-    public HTTPRequestsSingUp(string username, string password, string name)
+    public HTTPRequestsSignUp(string username, string password, string name)
     {
         this.username = username;
         this.password = password;
@@ -18,7 +22,7 @@ public class HTTPRequestsSingUp
     }
 }
 
-public class HTTPRequestSignIn
+public class HTTPRequestSignIn : HTTPRequest
 {
     public string username, password;
     public HTTPRequestSignIn(string username, string password)
@@ -28,7 +32,7 @@ public class HTTPRequestSignIn
     }
 }
 
-public class HTTPRequestAddScore
+public class HTTPRequestAddScore : HTTPRequest
 {
     public int score;
     public HTTPRequestAddScore(int score)

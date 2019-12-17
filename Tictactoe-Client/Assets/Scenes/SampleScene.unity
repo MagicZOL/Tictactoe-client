@@ -1305,7 +1305,18 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2074628843}
+        m_MethodName: OnValueChangeUsername
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 453599319}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.InputField, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
@@ -2592,7 +2603,18 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2074628843}
+        m_MethodName: OnValueChangefirstPassword
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 870382516}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.InputField, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
@@ -3328,7 +3350,18 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2074628843}
+        m_MethodName: OnValueChangename
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1232583145}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.InputField, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
@@ -3714,7 +3747,18 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2074628843}
+        m_MethodName: OnValueChangesecondPassword
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1398969437}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.InputField, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
@@ -5293,7 +5337,6 @@ GameObject:
   - component: {fileID: 2074628840}
   - component: {fileID: 2074628842}
   - component: {fileID: 2074628841}
-  - component: {fileID: 2074628844}
   - component: {fileID: 2074628843}
   m_Layer: 5
   m_Name: SingupBackground
@@ -5370,25 +5413,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47302b8c97e54e64eb3b1e448962b2ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!95 &2074628844
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2074628839}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b394484719c986d4e931479fbf861d60, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  usernameInputField: {fileID: 453599319}
+  firstPasswordInputField: {fileID: 870382516}
+  secondPasswordInputField: {fileID: 1398969437}
+  nameInputField: {fileID: 1232583145}
+  signInPanelManager: {fileID: 1418400236}
+  signUpButton: {fileID: 484136547}
 --- !u!1 &2099426285
 GameObject:
   m_ObjectHideFlags: 0
@@ -5681,7 +5711,6 @@ GameObject:
   - component: {fileID: 2127744110}
   - component: {fileID: 2127744114}
   - component: {fileID: 2127744113}
-  - component: {fileID: 2127744112}
   m_Layer: 5
   m_Name: SinginPanel
   m_TagString: Untagged
@@ -5711,25 +5740,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!95 &2127744112
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2127744109}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0df70d5ba99f73f4998f4e692699cc4e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &2127744113
 MonoBehaviour:
   m_ObjectHideFlags: 0

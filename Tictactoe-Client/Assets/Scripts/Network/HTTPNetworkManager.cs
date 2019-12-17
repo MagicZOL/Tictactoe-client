@@ -27,17 +27,22 @@ public class HTTPNetworkManager : MonoBehaviour
             return instance;
         }
     }
+    public void SignUp(string username, string password, string name, Action<HTTPResponse> success, Action fail)
+    {
+        HTTPRequestsSignUp signUpData = new HTTPRequestsSignUp(username, password, name);
+        var postData = signUpData.GetJSON();
+
+        StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.singUpRequestURL, success, fail));
+    }
 
     public void SIgnIn(string username, string password, Action<HTTPResponse> success, Action fail)
     {
         HTTPRequestSignIn signIndata = new HTTPRequestSignIn (username, password);
 
         //받은 데이터를 Json으로 변경
-        //var postData = signIndata.GetJSON();
-        var postData = JsonUtility.ToJson(signIndata);
+        var postData = signIndata.GetJSON();
 
         //로그인
-        //StartCoroutine(SendSignInRequest(username, password));
         StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.signInRequestURL, success, fail));
     }
 
@@ -45,8 +50,7 @@ public class HTTPNetworkManager : MonoBehaviour
     {
         HTTPRequestAddScore addScoreData = new HTTPRequestAddScore(score);
 
-        //var postData = addScoreData.GetJSON();
-        var postData = JsonUtility.ToJson(addScoreData);
+        var postData = addScoreData.GetJSON();
 
         StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.addScoreRequestURL, success, fail));
     }
@@ -93,16 +97,6 @@ public class HTTPNetworkManager : MonoBehaviour
                 success(response);
             }
         }
-    }
-
-    public void SignUp(string username, string password, string name, Action<HTTPResponse> success, Action fail)
-    {
-        HTTPRequestsSingUp signUpData = new HTTPRequestsSingUp(username, password, name);
-
-        //var postData = JsonUtility.GetJSON(signUpData);
-        var postData = JsonUtility.ToJson(signUpData);
-
-        StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.singUpRequestURL, success, fail));
     }
 
     //Dectinary

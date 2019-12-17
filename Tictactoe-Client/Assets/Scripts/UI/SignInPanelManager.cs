@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 public class SignInPanelManager : PanelManager
@@ -11,9 +12,13 @@ public class SignInPanelManager : PanelManager
     public void OnclickSignUp()
     {
         SignUpPanelManager.Show();
+        Hide();
     }
     public void OnclickSignIn()
     {
+        //Validation
+        if (PanelValidation() == false) return;
+
         //로그인
         HTTPNetworkManager.Instance.SIgnIn(usernameInputField.text, passwordInputField.text, (response) =>
         {
@@ -30,12 +35,60 @@ public class SignInPanelManager : PanelManager
 
                 PlayerPrefs.SetString("sid", cookieValue);
             }
+            Hide();
         }, () =>
         {
             //TODO : 로그인창 흔들기
         });
-
-        Hide();
     }
 
+    bool PanelValidation()
+    {
+        if (!IDValidation(usernameInputField.text))
+        {
+            usernameInputField.image.color = Color.red;
+            return false;
+        }
+        if (!PWValidation(passwordInputField.text))
+        {
+            passwordInputField.image.color = Color.red;
+            return false;
+        }
+        return true;
+    }
+
+    bool IDValidation(string id)
+    {
+        Regex regex = new Regex(@"[a-zA-Z0-9]");
+
+        if (regex.IsMatch(id) && (id.Length > 8 && id.Length < 20))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    bool PWValidation(string pw)
+    {
+        Regex regex = new Regex(@"[a-z]+[A-Z]+[0-9]+[~!@#$%^&*]");
+        if (regex.IsMatch(pw) && (pw.Length > 8 && pw.Length < 20))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private void OnEnable()
+    {
+        InitInputField(usernameInputField);
+        InitInputField(passwordInputField);
+
+    }
+
+    // InputField의 내용을 초기화
+    public void InitInputField(InputField inputField)
+    {
+        inputField.text = "";
+        inputField.image.color = Color.white;
+    }
 }
