@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using System;
 
 public class HTTPNetworkManager : MonoBehaviour
 {
     static HTTPNetworkManager instance;
-    
+
     public static HTTPNetworkManager Instance
     {
         get
@@ -27,37 +28,85 @@ public class HTTPNetworkManager : MonoBehaviour
         }
     }
 
-    public void SIgnIn(string username, string password)
+    public void SIgnIn(string username, string password, Action<HTTPResponse> success, Action fail)
     {
-        SignInData signIndata = new SignInData(username, password);
+        HTTPRequestSignIn signIndata = new HTTPRequestSignIn (username, password);
 
         //받은 데이터를 Json으로 변경
+        //var postData = signIndata.GetJSON();
         var postData = JsonUtility.ToJson(signIndata);
 
         //로그인
         //StartCoroutine(SendSignInRequest(username, password));
-        StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.signInRequestURL));
+        StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.signInRequestURL, success, fail));
     }
 
-    public void AddScore(int score)
+    public void AddScore(int score, Action<HTTPResponse> success, Action fail)
     {
-        AddScoreData addScoreData = new AddScoreData(score);
+        HTTPRequestAddScore addScoreData = new HTTPRequestAddScore(score);
 
+        //var postData = addScoreData.GetJSON();
         var postData = JsonUtility.ToJson(addScoreData);
 
-        StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.addScoreRequestURL));
+        StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.addScoreRequestURL, success, fail));
     }
 
-    public void SignUp(string username, string password, string name)
+    public void Info(Action<HTTPResponse> success, Action fail)
     {
-        SignUpData signUpData = new SignUpData(username, password, name);
+        StartCoroutine(SendGetRequest(HTTPNetworkConstant.infoRequestURL, success, fail));
+    }
 
+    IEnumerator SendGetRequest(string requestURL, Action<HTTPResponse> success, Action fail)
+    {
+        using (UnityWebRequest www = UnityWebRequest.Get(HTTPNetworkConstant.serverURL + requestURL))
+        {
+            yield return www.SendWebRequest();
+
+            if(www.isNetworkError)
+            {
+                Debug.Log(www.error);
+                fail();
+            }
+            else if(www.isHttpError)
+            {
+                long code = www.responseCode;
+
+                switch (code)
+                {
+                    case 401:
+                        PlayerPrefs.SetString("sid", "");
+                        GameManager.Instance.ShowSignInPanel();
+                        break;
+                }
+                fail();
+            }
+            else
+            {
+                Dictionary<string, string> header = www.GetResponseHeaders();// 헤더 정보, 세션아이디 포함
+
+                string cookie = header["Set-Cookie"];
+
+                long code = www.responseCode; //www.responseCode는 long 타입 , 응답에대한 코드
+                string message = www.downloadHandler.text;
+
+                HTTPResponse response = new HTTPResponse(code, message, header);
+                success(response);
+            }
+        }
+    }
+
+    public void SignUp(string username, string password, string name, Action<HTTPResponse> success, Action fail)
+    {
+        HTTPRequestsSingUp signUpData = new HTTPRequestsSingUp(username, password, name);
+
+        //var postData = JsonUtility.GetJSON(signUpData);
         var postData = JsonUtility.ToJson(signUpData);
 
-        StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.singUpRequestURL));
+        StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.singUpRequestURL, success, fail));
     }
 
-    IEnumerator SendPostRequest(string data, string requestURL)
+    //Dectinary
+    IEnumerator SendPostRequest(string data, string requestURL, Action<HTTPResponse> success, Action fail)
     {
         //서버와 약속한 건 post이지만 현재는 문제가 많아 put으로 선언
         //using 문으로 선언하여 동작하는 범위를 지정할 수 있다.
@@ -66,71 +115,47 @@ public class HTTPNetworkManager : MonoBehaviour
             www.method = "Post";
             www.SetRequestHeader("Content-Type", "application/json");
 
+            string sid = PlayerPrefs.GetString("sid", "");
+            {
+                if(sid != "")
+                {
+                    www.SetRequestHeader("Set-Cookie", sid);
+                }
+            }
             //보내기, sendWebRequest를 하면서 다른일을 하게 만들어줌
             yield return www.SendWebRequest();
 
-            if (www.isNetworkError || www.isHttpError)
+            // 서버 > 클라이언트로 응답(Response) 메시지 도착
+            if (www.isNetworkError)
             {
                 Debug.Log(www.error);
+                fail();
+            }
+            else if(www.isHttpError)
+            {
+                long code = www.responseCode;
+
+                switch (code)
+                {
+                    case 401:
+                        PlayerPrefs.SetString("sid", "");
+                        GameManager.Instance.ShowSignInPanel();
+                        break;
+                }
+                fail();
             }
             else
             {
-                var headers = www.GetResponseHeaders();
-                Debug.Log(www.downloadHandler.text);
+                Dictionary<string, string> header = www.GetResponseHeaders();// 헤더 정보, 세션아이디 포함
+
+                string cookie = header["Set-Cookie"];
+
+                long code = www.responseCode; //www.responseCode는 long 타입 , 응답에대한 코드
+                string message = www.downloadHandler.text; 
+
+                HTTPResponse response = new HTTPResponse(code, message, header); 
+                success(response);
             }
         }
     }
-    //IEnumerator SendSignInRequest(string username, string password)
-    //{
-    //    SignIndata signIndata = new SignIndata();
-    //    signIndata.username = username;
-    //    signIndata.password = password;
-
-    //    //받은 데이터를 Json으로 변경
-    //    var postData = JsonUtility.ToJson(signIndata);
-
-    //    //서버와 약속한 건 post이지만 현재는 문제가 많아 put으로 선언
-    //    UnityWebRequest www = UnityWebRequest.Put("localhost:3000/users/signin", postData);
-    //    www.method = "Post";
-    //    www.SetRequestHeader("Content-Type", "application/json");
-
-    //    //보내기, sendWebRequest를 하면서 다른일을 하게 만들어줌
-    //    yield return www.SendWebRequest();
-
-    //    if(www.isNetworkError || www.isHttpError)
-    //    {
-    //        Debug.Log(www.error);
-    //    }
-    //    else
-    //    {
-    //        var headers = www.GetResponseHeaders();
-    //        Debug.Log(www.downloadHandler.text);
-    //    }
-    //}
-
-    //IEnumerator SendAddScoreRequest(int score)
-    //{
-    //    AddScoreData addScoreData = new AddScoreData();
-    //    addScoreData.score = score;
-
-    //    var postData = JsonUtility.ToJson(addScoreData);
-
-    //    //서버와 약속한 건 post이지만 현재는 문제가 많아 put으로 선언
-    //    UnityWebRequest www = UnityWebRequest.Put("localhost:3000/users/addScore", postData);
-    //    www.method = "Post";
-    //    www.SetRequestHeader("Content-Type", "application/json");
-
-    //    //보내기, sendWebRequest를 하면서 다른일을 하게 만들어줌
-    //    yield return www.SendWebRequest();
-
-    //    if (www.isNetworkError || www.isHttpError)
-    //    {
-    //        Debug.Log(www.error);
-    //    }
-    //    else
-    //    {
-    //        var headers = www.GetResponseHeaders();
-    //        Debug.Log(www.downloadHandler.text);
-    //    }
-    //}
 }
