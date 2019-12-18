@@ -17,4 +17,25 @@ public class HTTPResponse
         this.message = message;
         this.headers = headers;
     }
+
+    public T GetDataFromMessage<T>() where T : class
+    {
+        T result = null;
+        if(this.code == 200 && this.message != null)
+        {
+            //HTTPResponseMessage msg = JsonUtility.FromJson<HTTPResponseMessage>(this.Message);
+            result = JsonUtility.FromJson<T>(this.Message);
+        }
+        return result;
+    }
+}
+
+public class HTTPResponseMessage
+{
+    public string message;
+}
+public class HTTPResponseInfo
+{
+    public string name;
+    public int score;
 }

@@ -13,4 +13,5 @@ public class HTTPNetworkConstant : MonoBehaviour
 
     //GET
     public const string infoRequestURL = "/users/info";
+    public const string logoutURL = "/users/logout";
 }

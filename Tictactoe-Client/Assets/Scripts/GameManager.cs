@@ -6,7 +6,10 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] SignInPanelManager signInPanelManager;
     [SerializeField] Button addScorebutton;
+    [SerializeField] Button logoutButton;
 
+    [SerializeField] Text nameText;
+    [SerializeField] Text scoreText;
     static GameManager instance;
     public static GameManager Instance
     {
@@ -28,6 +31,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void SetInfo(string name, int score)
+    {
+        nameText.text = name;
+        scoreText.text = score.ToString();
+    }
+
     void Start()
     {
         GetInfo();
@@ -46,22 +55,51 @@ public class GameManager : MonoBehaviour
             HTTPNetworkManager.Instance.Info( (response) =>
             {
                 Debug.Log(response);
+
+                string resultStr = response.Message;
+
+                HTTPResponseInfo info = response.GetDataFromMessage<HTTPResponseInfo>();
+
+                SetInfo(info.name, info.score);
             }, () =>
             {
-
-            });
+                nameText.text = "";
+                scoreText.text = "";
+            });        
         }
     }
 
     public void AddScore()
     {
+        addScorebutton.interactable = false;
+
         HTTPNetworkManager.Instance.AddScore(5, (response) =>
         {
             addScorebutton.interactable = true;
+
+            HTTPResponseInfo info = response.GetDataFromMessage<HTTPResponseInfo>();
+
+            SetInfo(info.name, info.score);
         }, () =>
         {
             addScorebutton.interactable = true;
         }); ;
+    }
+
+    public void Logout()
+    {
+        logoutButton.interactable = false;
+        HTTPNetworkManager.Instance.Logout((response) =>
+        {
+            PlayerPrefs.SetString("sid", "");
+
+            addScorebutton.interactable = false;
+            nameText.text = "";
+            scoreText.text = "";
+        }, () =>
+        {
+            logoutButton.interactable = false;
+        });
     }
 
     public void ShowSignInPanel()

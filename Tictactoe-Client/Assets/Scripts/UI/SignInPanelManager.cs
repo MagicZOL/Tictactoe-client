@@ -9,6 +9,14 @@ public class SignInPanelManager : PanelManager
     [SerializeField] InputField usernameInputField;
     [SerializeField] InputField passwordInputField;
 
+    [SerializeField] Button signInButton;
+    byte validationFlag = 0;
+
+    public override void Show()
+    {
+        base.Show();
+        signInButton.interactable = false;
+    }
     public void OnclickSignUp()
     {
         SignUpPanelManager.Show();
@@ -16,13 +24,10 @@ public class SignInPanelManager : PanelManager
     }
     public void OnclickSignIn()
     {
-        //Validation
-        if (PanelValidation() == false) return;
-
         //로그인
         HTTPNetworkManager.Instance.SIgnIn(usernameInputField.text, passwordInputField.text, (response) =>
         {
-            //쿠키값이 있으면
+            //쿠키값이 있으면 세션ID저장
             if(response.Headers.ContainsKey("Set-Cookie"))
             {
                 //signIn성공시 쿠키값 전달
@@ -35,60 +40,61 @@ public class SignInPanelManager : PanelManager
 
                 PlayerPrefs.SetString("sid", cookieValue);
             }
+
+            //유저의 점수 표시
+            //GameManager에게 GetInfo()를 호출하면서 유저이름과 스코어를 표시하는 방법이 있으나 이미 통신했는데 또 통신하는 비효율적인 상황이 생긴다.
+            HTTPResponseInfo info = response.GetDataFromMessage<HTTPResponseInfo>();
+            GameManager.Instance.SetInfo(info.name, info.score);
+            
+            //로그인창 닫기
             Hide();
         }, () =>
         {
             //TODO : 로그인창 흔들기
         });
     }
-
-    bool PanelValidation()
+    void OnvalueChangeFinalCheck()
     {
-        if (!IDValidation(usernameInputField.text))
+        if (validationFlag == 3)    
         {
-            usernameInputField.image.color = Color.red;
-            return false;
+            signInButton.interactable = true;
         }
-        if (!PWValidation(passwordInputField.text))
+        else
         {
-            passwordInputField.image.color = Color.red;
-            return false;
+            signInButton.interactable = false;
         }
-        return true;
     }
 
-    bool IDValidation(string id)
+    public void OnValueChangeUsername(InputField inputField)
     {
-        Regex regex = new Regex(@"[a-zA-Z0-9]");
+        string pattern = @"^[a-zA-Z0-9]{4,12}$";
 
-        if (regex.IsMatch(id) && (id.Length > 8 && id.Length < 20))
+        //유효성 검사 성공시 1로 or 연산하여 값이 있다는 1을 넣어줌
+        if (Regex.IsMatch(inputField.text, pattern))
         {
-            return true;
+            validationFlag = (byte)(validationFlag | 1);
         }
-        return false;
-    }
-
-    bool PWValidation(string pw)
-    {
-        Regex regex = new Regex(@"[a-z]+[A-Z]+[0-9]+[~!@#$%^&*]");
-        if (regex.IsMatch(pw) && (pw.Length > 8 && pw.Length < 20))
+        //유효성 검사 실패시 1110으로 검사한 해당 비트만 0으로 만들어줌 
+        else
         {
-            return true;
+            validationFlag = (byte)(validationFlag & ~1); // ~ : 비트 반전
         }
-        return false;
+        OnvalueChangeFinalCheck();
     }
 
-    private void OnEnable()
+    public void OnValueChangePassword(InputField inputField)
     {
-        InitInputField(usernameInputField);
-        InitInputField(passwordInputField);
+        string pattern = @"^[a-zA-Z0-9]{4,12}$";
 
-    }
-
-    // InputField의 내용을 초기화
-    public void InitInputField(InputField inputField)
-    {
-        inputField.text = "";
-        inputField.image.color = Color.white;
+        if (Regex.IsMatch(inputField.text, pattern))
+        {
+            validationFlag = (byte)(validationFlag | 1 << 1);
+        }
+        //1101
+        else
+        {
+            validationFlag = (byte)(validationFlag & ~(1 << 1));
+        }
+        OnvalueChangeFinalCheck();
     }
 }

@@ -60,6 +60,11 @@ public class HTTPNetworkManager : MonoBehaviour
         StartCoroutine(SendGetRequest(HTTPNetworkConstant.infoRequestURL, success, fail));
     }
 
+    public void Logout(Action<HTTPResponse> success, Action fail)
+    {
+        StartCoroutine(SendGetRequest(HTTPNetworkConstant.logoutURL, success, fail));
+    }
+
     IEnumerator SendGetRequest(string requestURL, Action<HTTPResponse> success, Action fail)
     {
         using (UnityWebRequest www = UnityWebRequest.Get(HTTPNetworkConstant.serverURL + requestURL))
@@ -88,12 +93,10 @@ public class HTTPNetworkManager : MonoBehaviour
             {
                 Dictionary<string, string> header = www.GetResponseHeaders();// 헤더 정보, 세션아이디 포함
 
-                string cookie = header["Set-Cookie"];
-
                 long code = www.responseCode; //www.responseCode는 long 타입 , 응답에대한 코드
-                string message = www.downloadHandler.text;
 
-                HTTPResponse response = new HTTPResponse(code, message, header);
+                HTTPResponseMessage message = JsonUtility.FromJson<HTTPResponseMessage>(www.downloadHandler.text);
+                HTTPResponse response = new HTTPResponse(code, message.message, header);
                 success(response);
             }
         }
@@ -142,12 +145,11 @@ public class HTTPNetworkManager : MonoBehaviour
             {
                 Dictionary<string, string> header = www.GetResponseHeaders();// 헤더 정보, 세션아이디 포함
 
-                string cookie = header["Set-Cookie"];
-
                 long code = www.responseCode; //www.responseCode는 long 타입 , 응답에대한 코드
-                string message = www.downloadHandler.text; 
+                //string message = www.downloadHandler.text; 
 
-                HTTPResponse response = new HTTPResponse(code, message, header); 
+                HTTPResponseMessage message = JsonUtility.FromJson<HTTPResponseMessage>(www.downloadHandler.text);
+                HTTPResponse response = new HTTPResponse(code, message.message, header); 
                 success(response);
             }
         }
