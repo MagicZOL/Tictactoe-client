@@ -39,3 +39,18 @@ public class HTTPResponseInfo
     public string name;
     public int score;
 }
+
+//respone.message로 받는 걸 파싱하기 위한 함수
+public class HTTPResponseChat
+{
+    [System.Serializable]
+    public struct chat
+    {
+        public string _id;
+        public string message;
+        public string name;
+        public string date;
+    }
+
+    public chat[] objects;
+}

@@ -2,29 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class GameManager : MonoBehaviour
+using System;
+using UnityEngine.SceneManagement;
+public class MainManager : MonoBehaviour
 {
     [SerializeField] SignInPanelManager signInPanelManager;
-    [SerializeField] Button addScorebutton;
+    [SerializeField] MessagePanelManager messagePanelManager;
+    [SerializeField] Button startGamebutton;
     [SerializeField] Button logoutButton;
 
     [SerializeField] Text nameText;
     [SerializeField] Text scoreText;
-    static GameManager instance;
-    public static GameManager Instance
+
+    static MainManager instance;
+    public static MainManager Instance
     {
         get
         {
             if (!instance)
             {
                 //유니티에서 할당된 객체가 있는지 찾아본다
-                instance = GameObject.FindObjectOfType(typeof(GameManager)) as GameManager;
+                instance = GameObject.FindObjectOfType(typeof(MainManager)) as MainManager;
                 if (!instance)
                 {
                     //새로 만든다
                     GameObject container = new GameObject();
                     container.name = "HTTPNetworkManager";
-                    instance = container.AddComponent(typeof(GameManager)) as GameManager;
+                    instance = container.AddComponent(typeof(MainManager)) as MainManager;
                 }
             }
             return instance;
@@ -35,55 +39,60 @@ public class GameManager : MonoBehaviour
     {
         nameText.text = name;
         scoreText.text = score.ToString();
+
+        EnableLoginButton(true);
     }
 
     void Start()
     {
+        EnableLoginButton(false);
         GetInfo();
     }
 
+    void EnableLoginButton(bool value)
+    {
+        startGamebutton.interactable = value;
+        logoutButton.interactable = value;
+    }
     void GetInfo()
     {
-        string sid = PlayerPrefs.GetString("sid");
-        if(sid.Equals(""))
+        HTTPNetworkManager.Instance.Info((response) =>
         {
-            // 로그인창 표시
-            signInPanelManager.Show();
-        }
-        else
-        {
-            HTTPNetworkManager.Instance.Info( (response) =>
-            {
-                Debug.Log(response);
+            Debug.Log(response);
 
-                string resultStr = response.Message;
-
-                HTTPResponseInfo info = response.GetDataFromMessage<HTTPResponseInfo>();
-
-                SetInfo(info.name, info.score);
-            }, () =>
-            {
-                nameText.text = "";
-                scoreText.text = "";
-            });        
-        }
-    }
-
-    public void AddScore()
-    {
-        addScorebutton.interactable = false;
-
-        HTTPNetworkManager.Instance.AddScore(5, (response) =>
-        {
-            addScorebutton.interactable = true;
+            string resultStr = response.Message;
 
             HTTPResponseInfo info = response.GetDataFromMessage<HTTPResponseInfo>();
 
             SetInfo(info.name, info.score);
         }, () =>
         {
-            addScorebutton.interactable = true;
+            nameText.text = "";
+            scoreText.text = "";
+        }); 
+    }
+
+    public void AddScore()
+    {
+        startGamebutton.interactable = false;
+
+        HTTPNetworkManager.Instance.AddScore(5, (response) =>
+        {
+            startGamebutton.interactable = true;
+
+            HTTPResponseInfo info = response.GetDataFromMessage<HTTPResponseInfo>();
+
+            SetInfo(info.name, info.score);
+        }, () =>
+        {
+            startGamebutton.interactable = true;
         }); ;
+    }
+
+    #region UI Button events
+    public void OnclickStartGame()
+    {
+        SceneManager.LoadScene("Gmame");
     }
 
     public void Logout()
@@ -93,7 +102,7 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.SetString("sid", "");
 
-            addScorebutton.interactable = false;
+            startGamebutton.interactable = false;
             nameText.text = "";
             scoreText.text = "";
         }, () =>
@@ -101,9 +110,18 @@ public class GameManager : MonoBehaviour
             logoutButton.interactable = false;
         });
     }
+    #endregion
+
+    #region 패널 관련 메소드
 
     public void ShowSignInPanel()
     {
         signInPanelManager.Show();
     }
+
+    public void ShowMessagePanel(string message, Action callback = null)
+    {
+        messagePanelManager.Show(message, callback);
+    }
+    #endregion
 }

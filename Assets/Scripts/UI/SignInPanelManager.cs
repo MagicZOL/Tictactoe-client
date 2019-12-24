@@ -10,6 +10,7 @@ public class SignInPanelManager : PanelManager
     [SerializeField] InputField passwordInputField;
 
     [SerializeField] Button signInButton;
+    [SerializeField] Button signUpButton;
     byte validationFlag = 0;
 
     public override void Show()
@@ -24,6 +25,9 @@ public class SignInPanelManager : PanelManager
     }
     public void OnclickSignIn()
     {
+        signInButton.interactable = false;
+        signUpButton.interactable = false;
+
         //로그인
         HTTPNetworkManager.Instance.SIgnIn(usernameInputField.text, passwordInputField.text, (response) =>
         {
@@ -44,13 +48,15 @@ public class SignInPanelManager : PanelManager
             //유저의 점수 표시
             //GameManager에게 GetInfo()를 호출하면서 유저이름과 스코어를 표시하는 방법이 있으나 이미 통신했는데 또 통신하는 비효율적인 상황이 생긴다.
             HTTPResponseInfo info = response.GetDataFromMessage<HTTPResponseInfo>();
-            GameManager.Instance.SetInfo(info.name, info.score);
+            MainManager.Instance.SetInfo(info.name, info.score);
             
             //로그인창 닫기
             Hide();
         }, () =>
         {
             //TODO : 로그인창 흔들기
+            signInButton.interactable = true;
+            signUpButton.interactable = true;
         });
     }
     void OnvalueChangeFinalCheck()

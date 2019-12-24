@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using System;
-
 public class HTTPNetworkManager : MonoBehaviour
 {
     static HTTPNetworkManager instance;
@@ -65,38 +64,44 @@ public class HTTPNetworkManager : MonoBehaviour
         StartCoroutine(SendGetRequest(HTTPNetworkConstant.logoutURL, success, fail));
     }
 
+    public void LoadChat(Action<HTTPResponse> success, Action fail, int lastSeq)
+    {
+        string requestURL = HTTPNetworkConstant.chatRequestURL + lastSeq.ToString();
+        StartCoroutine(SendGetRequest(requestURL, success, fail));
+    }
+
+    public void AddMessage(string message, Action<HTTPResponse> success, Action fail)
+    {
+        HTTPRequestAddMessage addMessageData = new HTTPRequestAddMessage(message);
+
+        var postData = addMessageData.GetJSON();
+
+        StartCoroutine(SendPostRequest(postData, HTTPNetworkConstant.addMessageRequestURL, success, fail));
+    }
+
     IEnumerator SendGetRequest(string requestURL, Action<HTTPResponse> success, Action fail)
     {
         using (UnityWebRequest www = UnityWebRequest.Get(HTTPNetworkConstant.serverURL + requestURL))
         {
             yield return www.SendWebRequest();
 
-            if(www.isNetworkError)
+            long code = www.responseCode; //www.responseCode는 long 타입 , 응답에대한 코드
+            HTTPResponseMessage message = JsonUtility.FromJson<HTTPResponseMessage>(www.downloadHandler.text);
+
+            if (www.isNetworkError)
             {
-                Debug.Log(www.error);
+                NetworkErrorHandler();
                 fail();
             }
             else if(www.isHttpError)
             {
-                long code = www.responseCode;
-
-                switch (code)
-                {
-                    case 401:
-                        PlayerPrefs.SetString("sid", "");
-                        GameManager.Instance.ShowSignInPanel();
-                        break;
-                }
+                HTTPErrorHandler(code, message.message);
                 fail();
             }
             else
             {
-                Dictionary<string, string> header = www.GetResponseHeaders();// 헤더 정보, 세션아이디 포함
-
-                long code = www.responseCode; //www.responseCode는 long 타입 , 응답에대한 코드
-
-                HTTPResponseMessage message = JsonUtility.FromJson<HTTPResponseMessage>(www.downloadHandler.text);
-                HTTPResponse response = new HTTPResponse(code, message.message, header);
+                Dictionary<string, string> headers = www.GetResponseHeaders();// 헤더 정보, 세션아이디 포함
+                HTTPResponse response = new HTTPResponse(code, message.message, headers);
                 success(response);
             }
         }
@@ -122,36 +127,60 @@ public class HTTPNetworkManager : MonoBehaviour
             //보내기, sendWebRequest를 하면서 다른일을 하게 만들어줌
             yield return www.SendWebRequest();
 
+            long code = www.responseCode; //www.responseCode는 long 타입 , 응답에대한 코드
+            HTTPResponseMessage message = JsonUtility.FromJson<HTTPResponseMessage>(www.downloadHandler.text);
+
             // 서버 > 클라이언트로 응답(Response) 메시지 도착
             if (www.isNetworkError)
             {
-                Debug.Log(www.error);
+                NetworkErrorHandler();
                 fail();
             }
             else if(www.isHttpError)
             {
-                long code = www.responseCode;
-
-                switch (code)
-                {
-                    case 401:
-                        PlayerPrefs.SetString("sid", "");
-                        GameManager.Instance.ShowSignInPanel();
-                        break;
-                }
+                HTTPErrorHandler(code, message.message);
                 fail();
+
             }
             else
             {
                 Dictionary<string, string> header = www.GetResponseHeaders();// 헤더 정보, 세션아이디 포함
-
-                long code = www.responseCode; //www.responseCode는 long 타입 , 응답에대한 코드
-                //string message = www.downloadHandler.text; 
-
-                HTTPResponseMessage message = JsonUtility.FromJson<HTTPResponseMessage>(www.downloadHandler.text);
                 HTTPResponse response = new HTTPResponse(code, message.message, header); 
                 success(response);
             }
+        }
+    }
+    void NetworkErrorHandler()
+    {
+        MainManager.Instance.ShowMessagePanel("서버에 접속할수 없습니다.", () =>
+        {
+            Debug.Log("Appliction Quit");
+        });
+    }
+
+    void HTTPErrorHandler(long code, string message)
+    {
+        switch(code)
+        {
+            case 400:
+                MainManager.Instance.ShowMessagePanel(message);
+                break;
+
+            case 401:
+                MainManager.Instance.ShowMessagePanel(message, () =>
+                {
+                    PlayerPrefs.SetString("sid", "");
+                    MainManager.Instance.ShowSignInPanel();
+                });
+                break;
+            
+            case 403:
+                MainManager.Instance.ShowMessagePanel(message);
+                break;
+
+            case 503:
+                MainManager.Instance.ShowMessagePanel(message);
+                break;
         }
     }
 }
