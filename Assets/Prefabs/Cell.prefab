@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5229737008142697869}
   - component: {fileID: 5229737008142697868}
   - component: {fileID: 5229737008142697871}
-  - component: {fileID: 713806106908144531}
   m_Layer: 0
   m_Name: Cell
   m_TagString: Cell
@@ -99,32 +98,6 @@ MonoBehaviour:
   circleMarkerSprite: {fileID: 21300000, guid: e713f103e502e3c4b86f4d124f6ccea5, type: 3}
   crossMarkerSprite: {fileID: 21300000, guid: 47b8fe34a01f952469dffd81621c5b22, type: 3}
   index: 0
---- !u!61 &713806106908144531
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5229737008142697858}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.48, y: 1.48}
-    newSize: {x: 1.48, y: 1.48}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.48, y: 1.48}
-  m_EdgeRadius: 0
 --- !u!1 &5229737008665646913
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,7 +167,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: e713f103e502e3c4b86f4d124f6ccea5, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -202,6 +175,6 @@ SpriteRenderer:
   m_Size: {x: 1.48, y: 1.48}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
