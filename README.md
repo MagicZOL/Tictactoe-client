@@ -7,7 +7,7 @@ Unity를 이용하여 만든 실시간 TicTacToe 게임입니다. <br>
 ***
 ***TicTacToe 게임 영상*** / ***Video of the TicTacToe game***
 
-![game](./Image/GIF.gif)
+![TicTacToe](./Image/GIF.gif)
 
 ***
 **게임소개**
