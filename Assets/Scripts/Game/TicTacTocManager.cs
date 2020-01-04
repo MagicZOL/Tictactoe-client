@@ -10,6 +10,8 @@ public class TicTacTocManager : MonoBehaviour
     [SerializeField] Button readyButton;
     [SerializeField] Text logText;
 
+    [SerializeField] ScrollRect scrollRect; // Log 화면
+
     [SerializeField] GameObject cellObject;
 
     [SerializeField] GameOverPanelManager gameOverPanelManager;
@@ -424,8 +426,17 @@ public class TicTacTocManager : MonoBehaviour
     }
     #endregion
 
-    void Setlog(string message)
+    private void Setlog(string message)
     {
+        Text logText = scrollRect.content.GetComponent<Text>();
         logText.text += message + "\n";
+
+        //함수실행 지연
+        Invoke("SetScrollDown", 0.1f);
+    }
+
+    private void SetScrollDown()
+    {
+        scrollRect.verticalNormalizedPosition = 0;
     }
 }
