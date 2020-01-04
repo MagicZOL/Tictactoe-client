@@ -7,7 +7,7 @@ Unity를 이용하여 만든 실시간 TicTacToe 게임입니다. <br>
 ***
 ***TicTacToe 게임 영상*** / ***Video of the TicTacToe game***
 
-![switch](./Image/GIF.gif)
+![game](./Image/GIF.gif)
 
 ***
 **게임소개**
@@ -96,4 +96,4 @@ Naver e-mail chfhrtorthsk@naver.com <br>
 
 ***
 
-![switch](./Image/anima.png)
+![anima](./Image/anima.png)
