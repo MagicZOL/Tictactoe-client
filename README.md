@@ -56,6 +56,8 @@ https://github.com/MagicZOL/TTTServer <br>
 Hello! <br>
 This is a real-time TicTacToe game created using Unity. <br>
 
+***
+
 **Introduction to the Games**
 <ul> 1. 1.Server connection <br>
 Connected to heroku server. <br>
