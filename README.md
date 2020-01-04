@@ -22,7 +22,7 @@ https://github.com/MagicZOL/TTTServer <br>
 게임준비 버튼을 누르면 준비상태가 되고 방에 있는 유저 모두가 준비를 눌러야 게임이 시작됩니다. <br>
 </ul>
 
-<ul> 3.O, X
+<ul> 3.O, X <br>
 게임 유저는 O 또는 X를 받게 됩니다. <br>
 준비를 먼저 누른 유저가 O를 받으며 선제 턴을 가져갑니다.<br>
 </ul>
